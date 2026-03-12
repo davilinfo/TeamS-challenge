@@ -26,7 +26,7 @@ Scoreboard data is stored in an **EF Core InMemory database** — no SQL Server 
 ### 2. Start the React UI
 
 ```bash
-cd uix
+cd ui
 npm install
 npm run dev
 ```
