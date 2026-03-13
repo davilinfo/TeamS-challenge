@@ -9,6 +9,7 @@ using AppChoice     = RpsLs.ApplicationService.Models.Choice;
 using AppPlayResult = RpsLs.ApplicationService.Models.PlayResult;
 using AppScoreEntry = RpsLs.ApplicationService.Models.ScoreEntry;
 using ApiPlayRequest = RpsLs.Api.Models.PlayRequest;
+using Microsoft.Extensions.Logging;
 
 namespace RpsLs.Tests;
 
@@ -17,7 +18,8 @@ public class GameControllerTests
     private static (GameController controller, Mock<IGameService> mockService) Create()
     {
         var mock = new Mock<IGameService>();
-        return (new GameController(mock.Object), mock);
+        var mockLogger = new Mock<ILogger<GameController>>();
+        return (new GameController(mock.Object, mockLogger.Object), mock);
     }
 
     // Reads the anonymous { error = "..." } object returned by bad-request responses
