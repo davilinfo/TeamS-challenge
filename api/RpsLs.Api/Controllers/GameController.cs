@@ -38,6 +38,10 @@ public class GameController(IGameService gameService) : ControllerBase
         {
             return BadRequest(new { error = ex.Message });
         }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }   
     }
 
     /// <summary>Returns the 10 most recent game results.</summary>
