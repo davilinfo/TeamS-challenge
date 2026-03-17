@@ -24,6 +24,7 @@ public class GameController(IGameService gameService, ILogger<GameController> lo
     [HttpPost("play")]
     [ProducesResponseType<PlayResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Play([FromBody] PlayRequest request)
     {
         logger.LogInformation("Received play request: {@Request}", request);
@@ -43,13 +44,14 @@ public class GameController(IGameService gameService, ILogger<GameController> lo
         catch (Exception ex)
         {
             logger.LogError(ex, "Error processing play request");
-            return BadRequest(new { error = ex.Message });
+            return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.Message });
         }   
     }
 
     /// <summary>Returns the 10 most recent game results.</summary>
     [HttpGet("scoreboard")]
-    [ProducesResponseType<IReadOnlyList<ScoreEntry>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<IReadOnlyList<ScoreEntry>>(StatusCodes.Status200OK)]    
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetScoreboard(){
         logger.LogInformation("Received request for scoreboard");
         try{
@@ -57,13 +59,14 @@ public class GameController(IGameService gameService, ILogger<GameController> lo
         }catch(Exception ex){
             logger.LogError(ex, "Error processing scoreboard request");
 
-            return BadRequest(new { error = ex.Message });
+            return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.Message });
         }
     }
 
     /// <summary>Resets the scoreboard.</summary>
     [HttpDelete("scoreboard")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ResetScoreboard()
     {
         logger.LogInformation("Received request to reset scoreboard");
@@ -72,7 +75,7 @@ public class GameController(IGameService gameService, ILogger<GameController> lo
             return NoContent();
         }catch(Exception ex){
             logger.LogError(ex, "Error processing reset scoreboard request");
-            return BadRequest(new { error = ex.Message});
+            return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.Message });
         }
     }
 }
