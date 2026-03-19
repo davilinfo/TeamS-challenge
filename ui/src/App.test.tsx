@@ -11,12 +11,9 @@ function renderWithProviders(
       results: PlayResult | null
       choices: Choice[]
       scoreboard: ScoreEntry[] | null
-      loading: boolean
-      error: string | null
-      loadingChoices: boolean
-      errorChoices: string | null
-      loadingScoreboard: boolean
-      errorScoreboard: string | null
+      playState: { loading: false, error: string | null },
+      choicesState: { loading: false, error: string | null },
+      scoreboardState: { loading: false, error: string | null },
     }
   }
 ) {
@@ -65,12 +62,9 @@ describe('App', () => {
         results: null,
         choices: mockChoices,
         scoreboard: null,
-        loading: false,
-        error: null,
-        loadingChoices: false,
-        errorChoices: null,
-        loadingScoreboard: false,
-        errorScoreboard: null,
+        playState: { loading: false, error: null },
+        choicesState: { loading: false, error: null },
+        scoreboardState: { loading: false, error: null },
       },
     })
 
@@ -85,12 +79,9 @@ describe('App', () => {
         results: mockResult,
         choices: mockChoices,
         scoreboard: null,
-        loading: false,
-        error: null,
-        loadingChoices: false,
-        errorChoices: null,
-        loadingScoreboard: false,
-        errorScoreboard: null,
+        playState: { loading: false, error: null },
+        choicesState: { loading: false, error: null },
+        scoreboardState: { loading: false, error: null },
       },
     })
 
@@ -106,12 +97,9 @@ describe('App', () => {
         results: null,
         choices: mockChoices,
         scoreboard: mockScoreboard,
-        loading: false,
-        error: null,
-        loadingChoices: false,
-        errorChoices: null,
-        loadingScoreboard: false,
-        errorScoreboard: null,
+        playState: { loading: false, error: null },
+        choicesState: { loading: false, error: null },
+        scoreboardState: { loading: false, error: null },
       },
     })
 

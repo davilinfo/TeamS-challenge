@@ -1,22 +1,10 @@
 import type { PlayResult, Choice } from '../types/types'
+import { ICONS } from "../constants/icons";
+import { RESULT_CONFIG } from '../constants/resultConfig';
 
 interface Props {
   result: PlayResult
   choices: Choice[]
-}
-
-const ICONS: Record<string, string> = {
-  rock: '✊',
-  paper: '✋',
-  scissors: '✌️',
-  lizard: '🦎',
-  spock: '🖖',
-}
-
-const RESULT_CONFIG = {
-  win:  { label: 'You Win!',  className: 'result--win'  },
-  lose: { label: 'You Lose!', className: 'result--lose' },
-  tie:  { label: "It's a Tie!", className: 'result--tie'  },
 }
 
 export function ResultDisplay({ result, choices }: Props) {
