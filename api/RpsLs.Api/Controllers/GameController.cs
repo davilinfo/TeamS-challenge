@@ -7,7 +7,7 @@ namespace RpsLs.Api.Controllers;
 [ApiController]
 [Route("")]
 [Produces("application/json")]
-public class GameController(IGameService gameService) : ControllerBase
+public class GameController(IGameService gameService, ILogger<GameController> logger) : ControllerBase
 {
     /// <summary>Returns all available choices.</summary>
     [HttpGet("choices")]
@@ -24,8 +24,10 @@ public class GameController(IGameService gameService) : ControllerBase
     [HttpPost("play")]
     [ProducesResponseType<PlayResult>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Play([FromBody] PlayRequest request)
     {
+        logger.LogInformation("Received play request: {@Request}", request);
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
@@ -36,31 +38,44 @@ public class GameController(IGameService gameService) : ControllerBase
         }
         catch (ArgumentOutOfRangeException ex)
         {
+            logger.LogWarning(ex, "Invalid player choice: {PlayerChoice}", request.Player);
             return BadRequest(new { error = ex.Message });
         }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error processing play request");
+            return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.Message });
+        }   
     }
 
     /// <summary>Returns the 10 most recent game results.</summary>
     [HttpGet("scoreboard")]
-    [ProducesResponseType<IReadOnlyList<ScoreEntry>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<IReadOnlyList<ScoreEntry>>(StatusCodes.Status200OK)]    
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetScoreboard(){
+        logger.LogInformation("Received request for scoreboard");
         try{
             return Ok(await gameService.GetScoreboardAsync());
         }catch(Exception ex){
-            return BadRequest(new { error = ex.Message });
+            logger.LogError(ex, "Error processing scoreboard request");
+
+            return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.Message });
         }
     }
 
     /// <summary>Resets the scoreboard.</summary>
     [HttpDelete("scoreboard")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ResetScoreboard()
     {
+        logger.LogInformation("Received request to reset scoreboard");
         try{
             await gameService.ResetScoreboardAsync();
             return NoContent();
         }catch(Exception ex){
-            return BadRequest(new { error = ex.Message});
+            logger.LogError(ex, "Error processing reset scoreboard request");
+            return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.Message });
         }
     }
 }

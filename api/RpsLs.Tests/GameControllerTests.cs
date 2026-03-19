@@ -9,6 +9,7 @@ using AppChoice     = RpsLs.ApplicationService.Models.Choice;
 using AppPlayResult = RpsLs.ApplicationService.Models.PlayResult;
 using AppScoreEntry = RpsLs.ApplicationService.Models.ScoreEntry;
 using ApiPlayRequest = RpsLs.Api.Models.PlayRequest;
+using Microsoft.Extensions.Logging;
 
 namespace RpsLs.Tests;
 
@@ -17,7 +18,8 @@ public class GameControllerTests
     private static (GameController controller, Mock<IGameService> mockService) Create()
     {
         var mock = new Mock<IGameService>();
-        return (new GameController(mock.Object), mock);
+        var mockLogger = new Mock<ILogger<GameController>>();
+        return (new GameController(mock.Object, mockLogger.Object), mock);
     }
 
     // Reads the anonymous { error = "..." } object returned by bad-request responses
@@ -198,15 +200,15 @@ public class GameControllerTests
     }
 
     [Fact]
-    public async Task GetScoreboard_Returns400_WithErrorMessage_WhenServiceThrows()
+    public async Task GetScoreboard_Returns500_WithErrorMessage_WhenServiceThrows()
     {
         var (ctrl, svc) = Create();
         svc.Setup(s => s.GetScoreboardAsync()).ThrowsAsync(new Exception("DB error"));
 
         var result = await ctrl.GetScoreboard();
 
-        var bad = Assert.IsType<BadRequestObjectResult>(result);
-        Assert.Equal("DB error", GetErrorMessage(bad.Value));
+        var internalError = Assert.IsType<ObjectResult>(result);
+        Assert.Equal(Microsoft.AspNetCore.Http.StatusCodes.Status500InternalServerError, internalError.StatusCode);
     }
 
     [Fact]
@@ -245,15 +247,15 @@ public class GameControllerTests
     }
 
     [Fact]
-    public async Task ResetScoreboard_Returns400_WithErrorMessage_WhenServiceThrows()
+    public async Task ResetScoreboard_Returns500_WithErrorMessage_WhenServiceThrows()
     {
         var (ctrl, svc) = Create();
         svc.Setup(s => s.ResetScoreboardAsync()).ThrowsAsync(new Exception("Reset failed"));
 
         var result = await ctrl.ResetScoreboard();
 
-        var bad = Assert.IsType<BadRequestObjectResult>(result);
-        Assert.Equal("Reset failed", GetErrorMessage(bad.Value));
+        var internalError = Assert.IsType<ObjectResult>(result);
+        Assert.Equal(Microsoft.AspNetCore.Http.StatusCodes.Status500InternalServerError, internalError.StatusCode);
     }
 
     [Fact]

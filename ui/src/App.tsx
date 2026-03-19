@@ -1,6 +1,6 @@
 import './App.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { apiPlay, getChoices, getScoreboard, setPlay, setReset } from './slices/slice'
+import { createFetchThunk, setChoices, setScoreboard, setPlay, setReset } from './slices/slice'
 import { ChoiceButton } from './components/ChoiceButton';
 import { Scoreboard } from './components/Scoreboard'
 import { ResultDisplay } from './components/ResultDisplay';
@@ -12,8 +12,11 @@ function App() {
   const dispatch = useDispatch<any>();
 
   useEffect(() => {
-    dispatch(getChoices({ url: '/choices' }));
-    dispatch(getScoreboard({ url: '/scoreboard' }));
+    dispatch(createFetchThunk("choices", setChoices)({ url: '/choices' }));
+  }, []);
+
+  useEffect(() => {
+    dispatch(createFetchThunk("scoreboard", setScoreboard)({ url: '/scoreboard' }));
   }, [app?.results]);
 
   function handlePlay(choiceId: number) {
@@ -22,7 +25,7 @@ function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ player: choiceId }),
     };
-    dispatch(apiPlay({ url: '/play', options }));
+    dispatch(createFetchThunk("play", setPlay)({ url: '/play', options })); 
   }
 
   function handleReset(){
@@ -30,7 +33,7 @@ function App() {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' }
     };
-    dispatch(setReset({ url: '/scoreboard', options }));
+    dispatch(createFetchThunk("reset", setReset)({ url: '/scoreboard', options }));
   };
 
   return (
@@ -42,20 +45,20 @@ function App() {
       </header>
 
       <main className="app__main">
-       {app?.loading && <p>Loading...</p>} 
-       {app?.error && (
+       {app?.playState?.loading && <p>Loading...</p>} 
+       {app?.playState?.error && (
           <div className="error-banner" role="alert">
-            {app.error}
+            {app.playState.error}
           </div>
         )}
-        {app?.errorChoices && (
+        {app?.choicesState?.error && (
           <div className="error-banner" role="alert">
-            {app.error}
+            {app.choicesState.error}
           </div>
         )}
-        {app?.errorScoreboard && (
+        {app?.scoreboardState?.error && (
           <div className="error-banner" role="alert">
-            {app.errorScoreboard}
+            {app.scoreboardState.error}
           </div>
         )}
        {app?.results && (
@@ -72,7 +75,7 @@ function App() {
         
         <div className="choices__grid">
           {app?.choices?.map((choice: Choice) => (
-            <ChoiceButton key={choice.id} choice={choice} onClick={handlePlay} disabled={app?.loading} />
+            <ChoiceButton key={choice.id} choice={choice} onClick={handlePlay} disabled={app?.playState?.loading} />
           ))}
         </div>
 

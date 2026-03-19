@@ -1,18 +1,11 @@
 import type { Choice } from "../types/types";
+import { ICONS } from "../constants/icons";
 
 interface Props {
   choice: Choice;
   onClick: (id: number) => void;
   disabled?: boolean;
   selected?: boolean;
-}
-
-const ICONS: Record<string, string> = {
-  rock: '✊',
-  paper: '✋',
-  scissors: '✌️',
-  lizard: '🦎',
-  spock: '🖖'
 }
 
 export function ChoiceButton({ choice, onClick, disabled, selected }: Props) {

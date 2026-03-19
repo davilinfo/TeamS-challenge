@@ -1,22 +1,10 @@
 import type { ScoreEntry } from '../types/types'
+import { ICONS } from "../constants/icons";
+import { RESULT_LABELS } from '../constants/resultConfig';
 
 interface Props {
   entries: ScoreEntry[]
   onReset: () => void
-}
-
-const RESULT_LABELS: Record<string, string> = {
-  win: 'Win',
-  lose: 'Lose',
-  tie: 'Tie',
-}
-
-const ICONS: Record<string, string> = {
-  rock: '✊',
-  paper: '✋',
-  scissors: '✌️',
-  lizard: '🦎',
-  spock: '🖖',
 }
 
 export function Scoreboard({ entries, onReset }: Props) {
